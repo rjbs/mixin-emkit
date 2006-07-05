@@ -12,8 +12,12 @@ use Email::MIME::Kit;
 use Sub::Exporter::Util;
 use Sub::Exporter -setup => {
   exporter => Sub::Exporter::Util::mixin_exporter,
-  exports => [qw(kit kit_dir kit_root_dir)],
-  groups  => { default => [qw(-all)] },
+  exports => [
+    qw(kit kit_dir),
+    kit_root_dir => \&_build_kit_root_dir
+  ],
+  groups     => { default => [qw(-all)] },
+  collectors => [ -setup => \&_setup ],
 };
 
 =head1 NAME
@@ -37,6 +41,25 @@ our $VERSION = '0.01';
     package main;
     my $obj = Foo->new;
     my $kit = $obj->kit($dir, \%arg);
+
+=head1 SETUP
+
+  use Mixin::EMKit -setup => { foo => 1 };
+
+Several options for configuring Mixin::EMKit's behavior can
+be passed in via the C<-setup> argument to the C<use> statement.
+
+=over 4
+
+=item * kit_root_dir
+
+See L<C<kit_root_dir()>|/kit_root_dir>.  If this value is
+passed in, it will be used instead of calling C<module_dir>.
+NOTE: C</kit> will still be appended to this value!
+
+=back
+
+=head2 kit
 
 =head1 FUNCTIONS
 
@@ -84,15 +107,32 @@ sub kit_dir {
 
 =head2 kit_root_dir
 
-Returns L<File::ShareDir|File::ShareDir>'s L<C<module_dir()>|File:ShareDir/module_dir>.
+Returns L<File::ShareDir|File::ShareDir>'s
+L<C<module_dir()>|File:ShareDir/module_dir> with C</kit>
+appended.
 
 This is an easy place for subclasses to override.
 
+See also the C<kit_root_dir> parameter in L</SETUP>.
+
 =cut
 
-sub kit_root_dir {
-  my $self = shift;
-  return File::ShareDir::module_dir(ref($self) || $self);
+sub _setup {
+  my ($coll, $arg) = @_;
+  # reimplement -default because using a collection 'breaks' it
+  @{$arg->{import_args}} = ['-all'] unless @{$arg->{import_args}};
+}
+
+sub _build_kit_root_dir {
+  my ($class, $name, $arg, $coll) = @_;
+  return sub {
+    my $self = shift;
+    return File::Spec->catdir(
+      $coll->{-setup}->{kit_root_dir} || 
+        File::ShareDir::module_dir(ref($self) || $self),
+      'kit',
+    );
+  };
 }
 
 =head1 AUTHOR
