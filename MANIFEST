@@ -9,7 +9,7 @@ t/boilerplate.t
 t/pod-coverage.t
 t/pod.t
 t/basic.t
-t/bar.mkit/message.yml
+t/kit/bar.mkit/message.yml
 inc/Module/Install/Can.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Win32.pm
