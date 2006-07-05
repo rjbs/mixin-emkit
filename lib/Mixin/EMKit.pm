@@ -7,9 +7,13 @@ use warnings;
 
 use File::ShareDir ();
 use File::Spec ();
+use Email::MIME::Kit;
 
+use Sub::Exporter::Util;
 use Sub::Exporter -setup => {
+  exporter => Sub::Exporter::Util::mixin_exporter,
   exports => [qw(kit kit_dir kit_root_dir)],
+  groups  => { default => [qw(-all)] },
 };
 
 =head1 NAME
@@ -47,16 +51,20 @@ If your class has a method called C< email_mime_kit_class >,
 it should return a class name, which will be used instead of
 Email::MIME::Kit.
 
+This does not attempt to C<require> the named class, so if
+you override the default, you will have to load your class
+manually.
+
 =cut
 
 sub kit {
-  my ($self, $name, @rest) = @_;
+  my ($self, $name, $opt) = @_;
+  $opt ||= {};
+  $opt->{stash} ||= {};
+  $opt->{stash}->{self} = $self;
   my $kit_class = $self->can("email_mime_kit_class") ?
     $self->email_mime_kit_class : 'Email::MIME::Kit';
-  return $kit_class->new(
-    $self->kit_dir($name),
-    @rest,
-  );
+  return $kit_class->new( $self->kit_dir($name), $opt );
 }
 
 =head2 kit_dir

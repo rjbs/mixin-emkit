@@ -10,6 +10,8 @@ build_requires 'Test::More' => 0;
 
 requires 'Sub::Exporter'           => 0;
 requires 'Email::MIME::Kit'        => 0;
+requires 'File::ShareDir'          => 0;
+requires 'File::Spec'              => 0;
 
 auto_install;
 WriteAll;

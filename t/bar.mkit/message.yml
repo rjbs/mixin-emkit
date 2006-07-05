@@ -1,0 +1,8 @@
+validate:
+  self: { isa: 'T' }
+message: !TT
+  header:
+    - From: Your Face <your@face.com>
+    - Subject: Your pie
+  type: text/plain
+  body: "It is [% self.flavor %] flavored."
