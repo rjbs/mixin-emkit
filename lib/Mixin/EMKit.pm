@@ -10,8 +10,8 @@ use File::Spec ();
 use Email::MIME::Kit;
 
 use Sub::Exporter::Util;
-use Sub::Exporter -setup => {
-  exporter => Sub::Exporter::Util::mixin_exporter,
+use Sub::Exporter 0.978 -setup => {
+  installer => Sub::Exporter::Util::mixin_installer,
   exports => [
     qw(kit kit_dir),
     kit_root_dir => \&_build_kit_root_dir
