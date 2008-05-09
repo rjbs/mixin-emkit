@@ -57,6 +57,10 @@ See L<C<kit_root_dir()>|/kit_root_dir>.  If this value is
 passed in, it will be used instead of calling C<module_dir>.
 NOTE: C</kit> will still be appended to this value!
 
+=item * kit_base_dir
+
+Override C<kit_root_dir> entirely -- no processing of this value will be done.
+
 =back
 
 =head2 kit
@@ -127,7 +131,7 @@ sub _build_kit_root_dir {
   my ($class, $name, $arg, $coll) = @_;
   return sub {
     my $self = shift;
-    return File::Spec->catdir(
+    return $coll->{-setup}->{kit_base_dir} || File::Spec->catdir(
       $coll->{-setup}->{kit_root_dir} || 
         File::ShareDir::module_dir(ref($self) || $self),
       'kit',
