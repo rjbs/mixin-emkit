@@ -131,9 +131,12 @@ sub _build_kit_root_dir {
   my ($class, $name, $arg, $coll) = @_;
   return sub {
     my $self = shift;
+
+    my $dist = ref($self) || $self;
+    $dist =~ s/::/-/g;
+
     return $coll->{-setup}->{kit_base_dir} || File::Spec->catdir(
-      $coll->{-setup}->{kit_root_dir} || 
-        File::ShareDir::module_dir(ref($self) || $self),
+      $coll->{-setup}->{kit_root_dir} || File::ShareDir::dist_dir($dist),
       'kit',
     );
   };
